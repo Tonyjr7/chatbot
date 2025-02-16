@@ -54,6 +54,7 @@ def send_message_to_groq(message):
 
 class MessageView(APIView):
     def post(self, request):
+        serializer_class = Payload()
 
         telex_format = {
             "message": send_message_to_groq("Hi"),
@@ -63,7 +64,7 @@ class MessageView(APIView):
         }
 
         headers = {"Content-Type": "application/json"}
-        requests.post(payload["return_url"], json=telex_format, headers=headers)
+        requests.post(serializer_class["return_url"], json=telex_format, headers=headers)
 
         payload = request.data
         print(payload)
