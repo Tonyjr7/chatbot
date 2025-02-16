@@ -21,59 +21,60 @@ class IntegrationView(APIView):
                     "background_color": "#fff",
                 },
                 "is_active": False,
-                "integration_type": "interval",
+                "integration_type": "modifier",
                 "key_features": ["-chatbot", "-ask it anything"],
                 "integration_category": "AI & Machine Learning",
                 "author": "Anthony Triumph",
                 "website": base_url,
                 "settings": [
-                    {
-                        "label": "interval",
-                        "type": "text",
-                        "required": True,
-                        "default": "* * * * *",  # Runs every 5 minutes
-                    },
+                    # {
+                    #     "label": "interval",
+                    #     "type": "text",
+                    #     "required": True,
+                    #     "default": "* * * * *",  # Runs every 5 minutes
+                    # },
                 ],
-                "tick_url": f"{base_url}/tick",
+                # "tick_url": f"{base_url}/tick",
                 "target_url": f"{base_url}/target"
             }
         }
 
         return Response(integration_json)
 
-class ReceiveMessage(APIView):
-    def post(self, request):
-        serializer = Message(data=request.data)
-        if serializer.is_valid():
-            message = serializer.validated_data.get('message')
-            print(message)
-            # Process message through Groq
-            response_message = send_message_to_groq(message)
-            print(response_message)
+# def get(self, request):
+#     serializer = Message(data=request.data)
+#     if serializer.is_valid():
+#         message = serializer.validated_data.get('message')
+#         print(message)
+#         # Process message through Groq
+#         response_message = send_message_to_groq(message)
+#         print(response_message)
 
-            # Forward to MessageView
-            return Response({"message": response_message}, status=200)
+#         # Forward to MessageView
+#         return Response({"message": response_message}, status=200)
 
-        return Response(serializer.errors, status=400)
+#     return Response(serializer.errors, status=400)
 
-def send_message_to_groq(message):
-    key = os.getenv("API_KEY")
-    if not key:
-        return "API key is missing"
+# def send_message_to_groq(message):
+#     key = os.getenv("API_KEY")
+#     if not key:
+#         return "API key is missing"
 
-    client = Groq(api_key=key)
-    chat_completion = client.chat.completions.create(
-        messages=[{"role": "user", "content": message}],
-        model="llama3-8b-8192",
-    )
-    return chat_completion.choices[0].message.content
+#     client = Groq(api_key=key)
+#     chat_completion = client.chat.completions.create(
+#         messages=[{"role": "user", "content": message}],
+#         model="llama3-8b-8192",
+#     )
+#     return chat_completion.choices[0].message.content
 
 class MessageView(APIView):
     def post(self, request):
         serializer = Payload(data=request.data)
         if serializer.is_valid():
             return_url = serializer.validated_data.get("return_url")
-            message = serializer.validated_data.get("message")  # Get message from request
+        
+            data = request.json()
+            message = data.get('message')  # Get message from request
 
             telex_format = {
                 "message": message,
