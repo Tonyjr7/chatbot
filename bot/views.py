@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from groq import Groq
 from bot.serializers import Payload
 import requests
+import os
 
 # Create your views here.
 class IntegrationView(APIView):
@@ -43,7 +44,8 @@ class IntegrationView(APIView):
     
 
 def send_message_to_groq(message):
-    client = Groq(api_key="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")
+    key = os.getenv("API_KEY")
+    client = Groq(api_key=key)
     chat_completion = client.chat.completions.create(
             messages=[{"role": "user", "content": message}],
             model="llama3-8b-8192",
