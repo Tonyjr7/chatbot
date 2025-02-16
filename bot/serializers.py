@@ -12,4 +12,6 @@ class Payload(serializers.Serializer):
     settings = Settings(many=True)
 
 class Message(serializers.Serializer):
+    event_name = serializers.CharField()
     message = serializers.CharField()
+    status = serializers.CharField()

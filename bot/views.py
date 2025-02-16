@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from groq import Groq
 from bot.serializers import Payload, Message
-from bot.models import ChatMessage  # Assuming you have a model for storing messages
 import requests
 import os
 
@@ -17,7 +16,7 @@ class IntegrationView(APIView):
                 "descriptions": {
                     "app_name": "Groq ChatBot",
                     "app_description": "A chatbot application",
-                    "app_logo": "https://img.freepik.com/free-vector/cartoon-style-robot-vectorart_78370-4103.jpg",
+                    "app_logo": "https://img.freepik.com/free-vector/cartoon-style-robot-vectorart_78370-4103.jpg?t=st=1739712365~exp=1739715965~hmac=0529c037fe9053bd424f85f02362a463e50b32d0e06f43e0380d710d0b9c7d50&w=740",
                     "app_url": base_url,
                     "background_color": "#fff",
                 },
@@ -32,11 +31,11 @@ class IntegrationView(APIView):
                         "label": "interval",
                         "type": "text",
                         "required": True,
-                        "default": "*/5 * * * *",
+                        "default": "* * * * *",  # Runs every 5 minutes
                     },
                 ],
-                "target_url": f"{base_url}/target",
-                "tick_url": f"{base_url}/tick"
+                "tick_url": f"{base_url}/tick",
+                "target_url": f"{base_url}/target"
             }
         }
 
@@ -46,13 +45,15 @@ class ReceiveMessage(APIView):
     def post(self, request):
         serializer = Message(data=request.data)
         if serializer.is_valid():
-            message = serializer.validated_data.get("message")
-            chatbot_response = send_message_to_groq(message)  
-            
-            chat_entry = ChatMessage.objects.create(user_message=message, bot_response=chatbot_response)
-            
-            return Response({"status": "received", "message_id": chat_entry.id}, status=200)
-        
+            message = serializer.validated_data.get('message')
+            print(message)
+            # Process message through Groq
+            response_message = send_message_to_groq(message)
+            print(response_message)
+
+            # Forward to MessageView
+            return Response({"message": response_message}, status=200)
+
         return Response(serializer.errors, status=400)
 
 def send_message_to_groq(message):
@@ -72,16 +73,10 @@ class MessageView(APIView):
         serializer = Payload(data=request.data)
         if serializer.is_valid():
             return_url = serializer.validated_data.get("return_url")
-            message_id = serializer.validated_data.get("message_id")
-            
-            try:
-                chat_entry = ChatMessage.objects.get(id=message_id)
-                chatbot_response = chat_entry.bot_response
-            except ChatMessage.DoesNotExist:
-                return Response({"error": "Message not found"}, status=404)
-            
+            message = serializer.validated_data.get("message")  # Get message from request
+
             telex_format = {
-                "message": chatbot_response,  # Use stored chatbot response
+                "message": message,
                 "username": "Dream Bot",
                 "event_name": "Dream Said",
                 "status": "success"
