@@ -34,7 +34,7 @@ class IntegrationView(APIView):
                         "label": "interval",
                         "type": "text",
                         "required": True,
-                        "default": "* * * * *",
+                        "default": "*/5 * * * *",
                     },
                 ],
                 "target_url": f"{base_url}/target",
