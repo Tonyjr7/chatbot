@@ -10,3 +10,6 @@ class Payload(serializers.Serializer):
     channel_id = serializers.CharField()
     return_url = serializers.CharField()
     settings = Settings(many=True)
+
+class Message(serializers.Serializer):
+    message = serializers.CharField()

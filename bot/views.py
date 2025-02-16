@@ -2,9 +2,12 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from groq import Groq
-from bot.serializers import Payload
+from bot.serializers import Payload, Message
 import requests
 import os
+
+# Store the last chatbot response for retrieval in MessageView
+chatbot_response = None
 
 class IntegrationView(APIView):
     def get(self, request):
@@ -34,12 +37,24 @@ class IntegrationView(APIView):
                         "default": "* * * * *",
                     },
                 ],
-                "target_url": "",
+                "target_url": f"{base_url}/target",
                 "tick_url": f"{base_url}/tick",
             }
         }
 
         return Response(integration_json)
+
+class ReceiveMessage(APIView):
+    def post(self, request):
+        global chatbot_response  # Store response for retrieval in MessageView
+
+        serializer = Message(data=request.data)
+        if serializer.is_valid():
+            message = serializer.validated_data.get("message")
+            chatbot_response = send_message_to_groq(message)  # Send message to Groq
+            return Response({"status": "received"}, status=200)
+
+        return Response(serializer.errors, status=400)
 
 def send_message_to_groq(message):
     key = os.getenv("API_KEY")
@@ -55,12 +70,14 @@ def send_message_to_groq(message):
 
 class MessageView(APIView):
     def post(self, request):
+        global chatbot_response  # Retrieve stored response
+
         serializer = Payload(data=request.data)
         if serializer.is_valid():
             return_url = serializer.validated_data.get("return_url")
             
             telex_format = {
-                "message": send_message_to_groq("Hi"),
+                "message": chatbot_response,  # Use chatbot response
                 "username": "Dream Bot",
                 "event_name": "Dream Said",
                 "status": "success"
