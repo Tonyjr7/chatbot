@@ -54,6 +54,9 @@ def send_message_to_groq(message):
 
 class MessageView(APIView):
     def post(self, request):
+        payload = Payload(request.data)
+        if not payload.is_valid():
+            return Response(payload.errors, status=400)
 
         telex_format = {
             "message": send_message_to_groq("who are you?"),
