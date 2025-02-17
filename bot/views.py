@@ -23,7 +23,7 @@ class IntegrationView(APIView):
                 "is_active": False,
                 "integration_type": "interval",
                 "key_features": ["-chatbot", "-ask it anything"],
-                "category": "AI & Machine Learning",
+                "integration_category": "AI & Machine Learning",
                 "author": "Anthony Triumph",
                 "website": base_url,
                 "settings": [
@@ -61,6 +61,7 @@ class MessageView(APIView):
             data = serializer.validated_data
             user_message = data.get("message", "who are you?")  # Use actual message or default
             return_url = data.get("return_url")
+            settings = data.get("settings")
 
             bot_response = send_message_to_groq(user_message)
 
