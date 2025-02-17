@@ -12,22 +12,25 @@ class IntegrationView(APIView):
 
         integration_json = {
             "data": {
-                "date": {"created_at": "2025-02-09", "updated_at": "2025-02-09"},
                 "descriptions": {
-                    "app_name": "Groq ChatBot",
+                    "app_name": "ChatBot",
                     "app_description": "A chatbot application",
                     "app_logo": "https://img.freepik.com/free-vector/cartoon-style-robot-vectorart_78370-4103.jpg?t=st=1739712365~exp=1739715965~hmac=0529c037fe9053bd424f85f02362a463e50b32d0e06f43e0380d710d0b9c7d50&w=740",
                     "app_url": base_url,
                     "background_color": "#fff",
                 },
-                "is_active": False,
                 "integration_type": "interval",
-                "key_features": ["-chatbot", "-ask it anything"],
+                "key_features": [
+                    "-chatbot"
+                ],
                 "integration_category": "AI & Machine Learning",
-                "author": "Anthony Triumph",
-                "website": base_url,
                 "settings": [
-                    {"label": "message", "type": "text", "required": True, "default": ""},
+                    {
+                        "label": "message", 
+                        "type": "text", 
+                        "required": True, 
+                        "default": "Hi"
+                    },
                     {
                         "label": "interval",
                         "type": "text",
@@ -35,8 +38,8 @@ class IntegrationView(APIView):
                         "default": "* * * * *",
                     }
                 ],
-                "target_url": "",
                 "tick_url": f"{base_url}/tick",
+                "target_url": "https://ping.telex.im/v1/webhooks/01951104-c02f-7920-ba4e-31fd5b4d438f"
             }
         }
 
