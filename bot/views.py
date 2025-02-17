@@ -23,7 +23,7 @@ class IntegrationView(APIView):
                 "is_active": False,
                 "integration_type": "interval",
                 "key_features": ["-chatbot", "-ask it anything"],
-                "integration_category": "AI & Machine Learning",
+                "category": "AI & Machine Learning",
                 "author": "Anthony Triumph",
                 "website": base_url,
                 "settings": [
