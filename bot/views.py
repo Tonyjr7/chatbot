@@ -27,8 +27,7 @@ class IntegrationView(APIView):
                 "author": "Anthony Triumph",
                 "website": base_url,
                 "settings": [
-                    {"label": "site-1", "type": "text", "required": True, "default": ""},
-                    {"label": "site-2", "type": "text", "required": True, "default": ""},
+                    {"label": "message", "type": "text", "required": True, "default": ""},
                     {
                         "label": "interval",
                         "type": "text",
